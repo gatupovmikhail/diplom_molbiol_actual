@@ -1,16 +1,20 @@
 from sys import exit
 from my_library import writting_file, checkfile, zagprint, few_columns
 
+# Просто выписывает все гены из списка.
 
 
 
-
-name_fgens='gens_spliceAI_sorted_concantenated.txt'
+#name_fgens='gens_spliceAI_sorted_concantenated.txt'
+name_fgens = 'gens_dominant.txt'
 zagprint(name_fgens)
 mfile=open(name_fgens,'r')
-name_genom_file='genom.fa'
+#name_genom_file='genom.fa'
+name_genom_file = 'gnomad_genome.txt'
 genom=open(name_genom_file,'r')
-file_out=open('gens.txt','w')
+#file_out=open('gens.txt','w')
+#file_out = open('pax6.txt','w')
+file_out = open('pax6_alt.txt','w')
 file_er1=open('gens_splice_er.txt','w')
 chm=[]
 wrong_gens=0
@@ -109,13 +113,13 @@ for st in mfile:
         if pos_out==50:
             pos_out=1
             file_out.write('\n')
-        file_out.write(buk)
+        file_out.write(buk.lower())
         kolvo+=1
         pos_out+=1
         pos += 1
         start+=1
     file_out.write('\n')
-    file_out.write('%t={}\tr={}\n'.format(str(tkolvo), str(kolvo)))
+    #file_out.write('%t={}\tr={}\n'.format(str(tkolvo), str(kolvo)))
 
 print(chm)
 mfile.close()
