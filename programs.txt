@@ -1,0 +1,81 @@
+for_splice_ai.py Готовит итоговые данные для splice_ai
+smena_poryadka.py
+    gens_spliceAI.txt (20275) + genom.fa || gens_spliceAI_sorted.txt (20274)
+7 filtr_polimorf.py Отфильтровывает полиморфизмы. В новом файле окажутся только полиморфизмы, которые располагаются в генах
+    вх: gnomad_polim_form.vcf,(из 5)  gens_spliceAI_sorted_concantenated.txt (17789) || вых: polim_in_gens.txt
+8 start_end_of_genom.py Вычисляет длину каждой хромосомы
+    вых: genom_startend.txt
+9 form_polim_in_gens.py Делает из полиморфизмов диапазон позиция +-50
+    вх: genom_startend.txt + polim_in_gens.txt || вых: polim_in_gens_form.txt(50 ну) // polim_in_gens_form_5.txt(5 ну)
+10 polim_bez_odinak.py Убирает полиморфизмы, имеющие одну и ту же позицию (сокращение количества информации!)
+    вх: polim_in_gens_form.txt(50 ну) // polim_in_gens_form_5.txt(5 ну) || вых: polim_in_gens_form_razn.txt // polim_in_gens_form_razn_5.txt
+11 concantenating_polim.py Соединяет перекрывающиеся области у полиморфизмов.
+    вх: polim_in_gens_form_razn.txt // polim_in_gens_form_razn_5.txt || вых: polim_in_gens_form_concan.txt //polim_in_gens_form_concan_5.txt
+//chek_polim.py Проверяет, нет ли перекрывающихся областей у полиморфизмов.
+    вх: polim_in_gens_form_concan.txt || вых: none
+//raspr_rast_polim.py Строит распределение расстояний между соседними полиморфизмами в одном гене.
+//analis_from_splice.py Определяет разницу между предсказаниями от SpliceAI
+//otobr_polim.py Фильтрует полиморфизмы. оставляет только те, которые находятся в ОПРЕДЕЛЕННЫХ генах из списка.
+    important_gens.txt + polim_in_gens_form_razn.txt || polim_in_gens_razn_otobr.txt
+pireparing_disease.py сравнивает позиции и сами замены из двух документов. Выводит совпадающие
+GNOMAD
+1 gnomad_filtr.py/gnomad_filtrY.py Извлекает из файлов столбцы chrom, pos, ref, alt и af. Убирает полипорфизмы с частотой меньше 1 %. Поли - SNP помечает $ (кроме первой snp)
+    вход: gnomad.genomes.r2.0.2.sites.chr{}.vcf || выход: gnomad_polim_chr{}.vcf (там все полим)
+2 concan_gnomad.py соединяет уже сокращенные хромосомы в нужном порядке.
+    вх: gnomad_polim_chr{}.vcf (там все полим) || вых: gnomad_polim_all.vcf (все полим) + gnomad_polim.vcf (полим с af>0.01)
+3 gnomad_likv.py Убирает поли-SNP (оставляет наиболее вероятные, с наибольшей af)
+    вх: gnomad_polim.vcf (полим с af>0.01) || вых: gnomad_polim_snp.vcf
+4 num_of_pol_gnom.py Изменение формата pos и формы записи snp.
+    вх: gnomad_polim_snp.vcf || вых: gnomad_polim_form.vcf
+5 num_of_pol2gnom.py Запись пол-мов на одной строке генома в одну строку
+    вх: gnomad_polim_form.vcf || вых: gnomad_polim_itog.vcf
+6 changing_genom40..py(?) изменение генома (snp ot gnomad)
+    вх: gnomad_polim_itog.vcf(для изменения), genom.fa, gnomad_polim.vcf(для аннотации??) || вых: gnomad_genome.txt (он будет дополняться в alt_gnom_genom.fa)
+// changing_genom30.py - изменение генома для dbSNP
+//comparing_gens.py сравнение одного генома с другим по выбранным фрагментам.
+//for_pax6_alt.py, for_pax6_ref.py, gens_exons.py, gen-mutant.py, gen_html.py были заменены на
+//four_genes.py - Выделение экзонов, полиморфизмов, сайтов сплайсинга и мутаций и создание html файла
+//comp_pat.py - сравнение позиций полиморфизмов из двух разных файлов.
+//comparing_pax6.txt - сравнивает список, полученный в результате прямого сравнения версий генов со списком полученным из polim_in_gens.txt
+//modif_result_spl.py аннотирует предсказания SpliceAI полиморфизмами. Предположительно, неправильно.
+//sites_spl.py поиск сайтов сплайсинга (попаданий полиморфизмов и мутаций в них)  по неправильной цепи
+//analis_from_splice20.py сравнивает предсказания построчно, с учетом того, что они записаны через ,
+12 for_splice_ai20.py делает мутагенез, в котором аллели разделены ,
+
+read_of_big_file.py разделяет большой файл на файлы по 100000 строк. Есть модуль time
+    входы(разные): for_splice_ai_alt20.vcf(50 ну)+zagn.txt // for_splice_ai_alt30.vcf(5 ну)+zagn.txt // polimorfs_gnomad_all_filtr.vcf(полиморф)+manual_new.vcf
+    выходы(разные): Elements1/splice/for_splice_ref_{}.vcf // splice_alt(ref)/for_splice_alt(ref)_{}.vcf // splice_polimorfs/for_splice_polim_{}.vcf
+otbor_of_ref.py отбирает нужные данные из файла от разрабов SpliceAI
+find_in_big_file поиск нужной строки в большом файле.
+exception_of_wrong_rows.py поиск интервалов, в которых лежат значения позиций хромосом в большом файле.
+tri_to_one_predict - перевод предсказания в новый формат, при котором аллели записываются через ,
+sequense_of_chroms.py - изменение порядка хромосом в файле, через промежуточную запись в папку. 
+comparing_big_files - сравнение двух больших файлов построчно, проверка на идентичность только позиций в них. 
+find_in_big_file поиск и вывод определенной строчки в большом файле и ее окружения
+dopis_of_big_file.py  - дописывание позиций с условной аллелью E, чтобы позиции в двух файлах были полностью идентичны.
+format_vcf.py - файл, подготавливающий области в нужном формате, чтобы потом можно было бы сделать их мутагенез
+analis_from_splice30.py сравнивает предсказания построчно, с учетом того, что они записаны через ,
+@filtr_of_all_polim_gnom.py Отфильтровывает полиморфизмы. В новом файле окажутся только полиморфизмы, которые располагаются в генах
+    вход: gnomad_polim_all.vcf, gens_spliceAI_sorted_concantenated.txt || выход: gnomad_polim_all_filtr.vcf
+pax6_comp.py Для сравнения референсной версии PAX6 и версии PAX6 от разработчиков SpliceAI
+    вход: pax6_from_razrab_filtr.vcf(разраб), pax6_ref_alg.vcf(наш,причем он подкоррект.) || выход: an_pax6_{:.2}.vcf
+delete_of_st.py Побочный проект: обработка предсказаний полиморфизмов. Удаляем все строки, в которых все вероятности равны нулю
+    вход: Загрузки/ALL GnomAD variants/done_gnome_archives/for_splice_polim_{}.vcf || выход: all_gnom_variants_pred_filtr.vcf
+score_of_gnomad.py Строится гистограмма распределения предсказаний по максимальным вероятностям.
+    вход: all_gnom_variants_pred_filtr.vcf || выход: НЕТ
+score_larger.py Сразу две функции. Во-первых оставляет только полиморфизмы в генах Ad/AR. Потом еще оставляет только полимфорфизмы с максимальными скорами >0.1 и >0.2
+    1 вход: all_gnom_variants_pred_filtr.vcf+gens_ad // all_gnom_variants_pred_filtr.vcfgens_ar || выход: all_gnom_variants_pred_filtr_ad.vcf // all_gnom_variants_pred_filtr_ar.vcf
+    2 вход: all_gnom_variants_pred_filtr_ad.vcf // all_gnom_variants_pred_filtr_ar.vcf || выход: all_gnom_variants_pred_filtr_ad_l_01.vcf+all_gnom_variants_pred_filtr_ad_l_02.vcf // all_gnom_variants_pred_filtr_ar_l_01.vcf+all_gnom_variants_pred_filtr_ar_l_02.vcf
+table_statistic_of_genes.py Подсчет различной статистики по различающимся предсказаниям. ТАМ КУЧА ВЫХОДНЫХ ФАЙЛОВ!
+    вход: results.vcf ||выходы: statistic_dist_polims.vcf(гены и кол-во различающихся предсказаний) difference_{}(все предск. у которых разница позиций пол-мут={}), position_0.vcf (Все предск, с позицией предс.=0 в СС)
+statistic_of_genes.py - подсчет количества полиморфизмов для каждого гена.
+    вход: gens_spliceAI.txt, gnomad_polim_all_filtr.vcf || выход: gens_statistic_polim.vcf (гены с кол-вом полиморфизмов)
+statistic_polim_and_predict.py - строит гистограммы зависимостей полим(длина), диф.пред(полим), диф.пред(длина)
+    вход: gens_statistic_polim.vcf, statistic_dist_polims.vcf || выход: errors_in_gens(временно)
+checking_results.py проверяет различные предсказания на повторяемость
+    results.vcf || results_un.vcf
+minus_polim_pred.py отфильтровывает предсказания рядом с которыми есть несколько близких snp
+    results_un.vcf || results_filtr.vcf, pred_with_2_polim.vcf, pred_odinak.vcf
+ochistka_predskaz - очищает от предсказаний, рядом с которыми есть полиморфизмы, между которыми расстояние менее 10 нуклеотидов
+    gnomad_polim_snp.vcf, results_filtr.vcf || pred_filtr.vcf, pred_remove.vcf
+statistic_of_predictions.py # вытаскивает только предсказания с донорными сайтами в альтернативном сплайсинге и подсчитывает их статистику
