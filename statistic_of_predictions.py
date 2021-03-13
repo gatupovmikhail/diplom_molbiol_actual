@@ -119,7 +119,7 @@ for st in dinpol:
     for i in range(6, 10):
         positions_alt.append(int(predict_alt[i]))
     chek(st_ref, st_alt, pos, pos_snp, probab_ref, probab_alt, positions_alt, er)
-print('yps')
+print('Mission complited')
 print(er)
 
 
