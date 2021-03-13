@@ -39,7 +39,7 @@ zag = pred.readline()
 out_don = open('pred_filtr_ds.vcf','w')
 out_dg = open('pred_filtr_ds_dg.vcf','w')
 out_dl = open('pred_filtr_ds_dl.vcf','w')
-out_dgdl = open('pred_filtr_ds_dl.vcf','w')
+out_dgdl = open('pred_filtr_ds_dgdl.vcf','w')
 out_dg.write(zag)
 out_dl.write(zag)
 out_dgdl.write(zag)
@@ -72,23 +72,21 @@ for st in pred:
         positions_alt.append(int(predict_alt[i]))
 
 
-    if (probab_alt[2] - probab_ref[2] >= 0.5) and not(probab_alt[3] - probab_ref[3] >= 0.5):
+    if (abs(probab_alt[2] - probab_ref[2]) >= 0.5) and not(abs(probab_alt[3] - probab_ref[3]) >= 0.5):
         out_dg.write(st_ref+st_alt)
         stat[0]+=1
-    if not(probab_alt[2] - probab_ref[2] >= 0.5) and (probab_alt[3] - probab_ref[3] >= 0.5):
+    if not(abs(probab_alt[2] - probab_ref[2]) >= 0.5) and (abs(probab_alt[3] - probab_ref[3]) >= 0.5):
         out_dl.write(st_ref+st_alt)
         stat[1]+=1
-    if (probab_alt[2] - probab_ref[2] >= 0.5) and (probab_alt[3] - probab_ref[3] >= 0.5):
+    if (abs(probab_alt[2] - probab_ref[2]) >= 0.5) and (abs(probab_alt[3] - probab_ref[3]) >= 0.5):
         out_dgdl.write(st_ref+st_alt)
         stat[2]+=1
-    if ((probab_alt[2] - probab_ref[2] >= 0.5) or (probab_alt[3] - probab_ref[3] >= 0.5)):# and not((probab_alt[2] - probab_ref[2] >= 0.5) and (probab_alt[3] - probab_ref[3] >= 0.5)):
+    if abs(probab_alt[2] - probab_ref[2]) >= 0.5 or abs(probab_alt[3] - probab_ref[3]) >= 0.5:# and not((probab_alt[2] - probab_ref[2] >= 0.5) and (probab_alt[3] - probab_ref[3] >= 0.5)):
         out_don.write(st_ref+st_alt)
         stat[3]+=1
 
 print(lab_stat)
 print(stat)
-
-
 
 
 
