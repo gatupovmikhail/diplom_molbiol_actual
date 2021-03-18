@@ -1,5 +1,6 @@
 # вытаскивает только предсказания с донорными сайтами в альтернативном сплайсинге
 # и подсчитывает их статистику
+import matplotlib.pyplot as plt
 def in_ss_pos(mut_gen,mut_ss,pol_gen): # система координат -2-1+1+2 не используется! вместо нее -2-1,0,+1+2. То есть 0 - это +1 и т. д.
     delta = pol_gen - mut_gen
     if mut_ss > 0:
@@ -202,32 +203,32 @@ print(sum(stat[0:2]))
 out_don.close()
 ## непонятно зачем.
 dinpol = open('polim_in_dinucl.vcf','r')
-zag = dinpol.readline()
-for st in dinpol:
-    st_ref = st
-    stm = st[:-1].split('\t')
-    pos = int(stm[2])
-    predict_ref = stm[6].split('|')
-    snp = stm[5].split('|')
-    pos_snp = int(snp[2])
-    probab_ref = []
-    for i in range(2, 6):
-        probab_ref.append(float(predict_ref[i]))
-    positions_ref = []
-    for i in range(6, 10):
-        positions_ref.append(int(predict_ref[i]))
-
-    st = dinpol.readline()
-    st_alt = st
-    stm = st[:-1].split('\t')
-    predict_alt = stm[6].split('|')
-    probab_alt = []
-    for i in range(2, 6):
-        probab_alt.append(float(predict_alt[i]))
-    positions_alt = []
-    for i in range(6, 10):
-        positions_alt.append(int(predict_alt[i]))
-    chek(st_ref, st_alt, pos, pos_snp, probab_ref, probab_alt, positions_alt, er)
+# zag = dinpol.readline()
+# for st in dinpol:
+#     st_ref = st
+#     stm = st[:-1].split('\t')
+#     pos = int(stm[2])
+#     predict_ref = stm[6].split('|')
+#     snp = stm[5].split('|')
+#     pos_snp = int(snp[2])
+#     probab_ref = []
+#     for i in range(2, 6):
+#         probab_ref.append(float(predict_ref[i]))
+#     positions_ref = []
+#     for i in range(6, 10):
+#         positions_ref.append(int(predict_ref[i]))
+#
+#     st = dinpol.readline()
+#     st_alt = st
+#     stm = st[:-1].split('\t')
+#     predict_alt = stm[6].split('|')
+#     probab_alt = []
+#     for i in range(2, 6):
+#         probab_alt.append(float(predict_alt[i]))
+#     positions_alt = []
+#     for i in range(6, 10):
+#         positions_alt.append(int(predict_alt[i]))
+#     chek(st_ref, st_alt, pos, pos_snp, probab_ref, probab_alt, positions_alt, er)
 print('Mission completed')
 print(er)
 
@@ -237,6 +238,25 @@ out_dg.close()
 out_dl.close()
 out_dgdl.close()
 pred.close()
+
+# отображение
+plt.bar(din_label[:-1],din[:-1])
+for i,t in enumerate(din):
+    plt.text(i,t+0.01*t,(str(t)),horizontalalignment='center')
+plt.text(i,-50,'GGTA')
+plt.xlabel('Sites')
+plt.ylabel('Number of predictions')
+plt.title('Mutations in different positions of donor sites')
+#plt.grid(True)
+plt.show()
+
+lab_din2 = ["Mutations or polimorfisms, \n located in GT","Mutations and polimorfisms, \n which don't interrupt GT"]
+S_loc= sum(din[:-1])
+ss = sum(din)
+print(ss)
+print(din[len(din)-1])
+plt.pie([S_loc,din[len(din)-1]],labels=lab_din2,autopct=lambda x: int(round(x/100*ss)))
+plt.show()
 
 # mpTA:1163
 # pmTA:1103
