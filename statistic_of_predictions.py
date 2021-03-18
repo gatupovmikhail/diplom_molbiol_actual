@@ -46,7 +46,9 @@ out_dgdl.write(zag)
 out_don.write(zag)
 stat = [0]*4
 lab_stat = ['ds_dg','ds_dl','ds_dgdl','all']
+f_pos = 0
 for st in pred:
+    f_pos +=1
     st_ref = st
     stm = st[:-1].split('\t')
     predict_ref = stm[6].split('|')
@@ -55,21 +57,41 @@ for st in pred:
     probab_ref = []
     for i in range(2,6):
         probab_ref.append(float(predict_ref[i]))
+    if f_pos == 1:
+        print('checking positions')
+        print(st_ref)
+        print('probab_ref')
+        print(probab_ref)
     positions_ref = []
     for i in range(6,10):
         positions_ref.append(int(predict_ref[i]))
-
+    if f_pos == 1:
+        print('positions_ref')
+        print(positions_ref)
 
     st = pred.readline()
     st_alt = st
     stm = st[:-1].split('\t')
     predict_alt = stm[6].split('|')
     probab_alt= []
+
     for i in range(2, 6):
         probab_alt.append(float(predict_alt[i]))
+    if f_pos == 1:
+        print('checking positions')
+        print(st_alt)
+        print('probab_alt')
+        print(probab_alt)
     positions_alt = []
     for i in range(6, 10):
         positions_alt.append(int(predict_alt[i]))
+    if f_pos == 1:
+        print('positions_alt')
+        print(positions_alt)
+    if f_pos ==1:
+        print('predict_ref\tpredict_alt\tpos_snp\tsnp')
+        print('{}\t{}\t{}\t{}'.format(predict_ref,predict_alt,pos_snp,snp))
+        print('###################################################################################################\n')
 
 
     if (abs(probab_alt[2] - probab_ref[2]) >= 0.5) and not(abs(probab_alt[3] - probab_ref[3]) >= 0.5):
@@ -119,7 +141,7 @@ for st in dinpol:
     for i in range(6, 10):
         positions_alt.append(int(predict_alt[i]))
     chek(st_ref, st_alt, pos, pos_snp, probab_ref, probab_alt, positions_alt, er)
-print('Mission complited')
+print('Mission completed')
 print(er)
 
 
