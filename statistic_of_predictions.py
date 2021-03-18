@@ -23,6 +23,7 @@ def find_din_1(din,p_ref,p_alt,pos_ss_ref,pos_ss_alt,pos_mut,pos_snp,name_file):
     fl_site = 0
     for (k, (ps, delta)) in enumerate(pos_dist):
         if pos_ss_mut== ps and dist == delta:
+            #print('k:{}\tp_ref:{}\tp_alt:{}\tpos_ss_ref:{}\tpos_ss_alt:{}\tpos_mut:{}\tpos_snp:{}'.format(k,p_ref,p_alt,pos_ss_ref,pos_ss_alt,pos_mut,pos_snp))
             din[k] += 1
             fl_site = 1
             break
@@ -183,9 +184,27 @@ for st in pred:
         out_dgdl.write(st_ref+st_alt)
         stat[2]+=1
         find_din_2(din, probab_ref, probab_alt, positions_ref, positions_alt, pos_mut, pos_snp, 'pred_filtr_ds_dgdl.vcf')
-    if abs(probab_alt[2] - probab_ref[2]) >= 0.5 or abs(probab_alt[3] - probab_ref[3]) >= 0.5:# and not((probab_alt[2] - probab_ref[2] >= 0.5) and (probab_alt[3] - probab_ref[3] >= 0.5)):
+    if abs(probab_alt[2] - probab_ref[2]) >= 0.5 or abs(probab_alt[3] - probab_ref[3]) >= 0.5: #and not(( abs(probab_alt[2] - probab_ref[2]) >= 0.5) and (abs(probab_alt[3] - probab_ref[3]) >= 0.5)):
         out_don.write(st_ref+st_alt)
         stat[3]+=1
+
+    # # ВНИМАНИЕ!!!!!!!!!!!!!! ДЛЯ ПОЛНОЦЕННОЙ ЗАМЕНЫ НУЖНО ПОМЕНЯТЬ ИНДЕКСЫ В find_din_2()!!!!
+    # if (abs(probab_alt[0] - probab_ref[0]) >= 0.5) and not(abs(probab_alt[1] - probab_ref[1]) >= 0.5):
+    #     out_dg.write(st_ref+st_alt)
+    #     stat[0]+=1
+    #     find_din_1(din, probab_ref[0], probab_alt[0], positions_ref[0], positions_alt[0], pos_mut, pos_snp, 'pred_filtr_ds_dg.vcf')
+    # if not(abs(probab_alt[0] - probab_ref[0]) >= 0.5) and (abs(probab_alt[1] - probab_ref[1]) >= 0.5):
+    #     out_dl.write(st_ref+st_alt)
+    #     stat[1]+=1
+    #     find_din_1(din, probab_ref[1], probab_alt[1], positions_ref[1], positions_alt[1], pos_mut, pos_snp,'pred_filtr_ds_dl.vcf')
+    # if (abs(probab_alt[0] - probab_ref[0]) >= 0.5) and (abs(probab_alt[1] - probab_ref[1]) >= 0.5):
+    #     out_dgdl.write(st_ref+st_alt)
+    #     stat[2]+=1
+    #     find_din_2(din, probab_ref, probab_alt, positions_ref, positions_alt, pos_mut, pos_snp, 'pred_filtr_ds_dgdl.vcf')
+    # if abs(probab_alt[0] - probab_ref[0]) >= 0.5 or abs(probab_alt[1] - probab_ref[1]) >= 0.5:
+    #     out_don.write(st_ref+st_alt)
+    #     stat[3]+=1
+
 print('Статистика')
 print(lab_stat)
 print(stat)
