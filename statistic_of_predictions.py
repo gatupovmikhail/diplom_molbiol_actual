@@ -8,6 +8,7 @@ def in_ss_pos(mut_gen,mut_ss,pol_gen): # система координат -2-1+
         return 10**4
     return mut_ss + delta
 
+# для случаев, где 1 сайт возникает/исчазает
 def find_din_1(din,p_ref,p_alt,pos_ss_ref,pos_ss_alt,pos_mut,pos_snp,name_file):
     ## ['mpTA','pmTA','GmpA','GpmA','GGmp','GGpm','SNP in GT','other'] #GGTA [(-1,-1),(1,1),(1,-1),(2,1),(2,-1),(3,1)] len_label=8
     pos_dist = [(-1, -1), (1, 1), (1, -1), (2, 1), (2, -1), (3, 1)] # len = 6
@@ -32,6 +33,49 @@ def find_din_1(din,p_ref,p_alt,pos_ss_ref,pos_ss_alt,pos_mut,pos_snp,name_file):
             fl_site+=1
     if fl_site == 0:
         din[7]+=1
+
+def find_din_modify(p_ref,p_alt,pos_ss_ref,pos_ss_alt,pos_mut,pos_snp):
+    ## ['mpTA','pmTA','GmpA','GpmA','GGmp','GGpm','SNP in GT','other'] #GGTA [(-1,-1),(1,1),(1,-1),(2,1),(2,-1),(3,1)] len_label=8
+    pos_dist = [(-1, -1), (1, 1), (1, -1), (2, 1), (2, -1), (3, 1)]  # len = 6
+    dist = pos_mut - pos_snp
+    pos_ss_mut = 'NaN'
+    if p_alt - p_ref >= 0.5:
+        pos_ss_mut = pos_ss_alt
+    else:
+        pos_ss_mut = pos_ss_ref
+
+
+    for (k, (ps, delta)) in enumerate(pos_dist):
+        if pos_ss_mut == ps and dist == delta:
+            return k
+
+    pos_ss_snp = in_ss_pos(pos_mut, pos_ss_mut, pos_snp)
+    if pos_ss_snp == 0 or pos_ss_snp == 1:
+        return 6
+    else:
+        return 7
+
+
+# для случаев, где 2 сайта возникает/исчазает
+def find_din_2(din,p_refmas,p_altmas,pos_ss_refmas,pos_ss_altmas,pos_mut,pos_snp,name_file):
+    k_dg = find_din_modify(p_refmas[2], p_altmas[2], pos_ss_refmas[2], pos_ss_altmas[2], pos_mut, pos_snp)
+    k_dl = find_din_modify(p_refmas[3], p_altmas[3], pos_ss_refmas[3], pos_ss_altmas[3], pos_mut, pos_snp)
+    if k_dg==7 and not(k_dl == 7):
+        din[k_dl] += 1
+    if not(k_dg == 7) and k_dl == 7:
+        din[k_dg] += 1
+    if k_dg == 7 and k_dl == 7:
+        din[7] += 1
+
+    if k_dg == 6 and not(k_dl == 6) and not(k_dl==7):
+        din[k_dl] += 1
+    if not(k_dg == 6) and not(k_dg==7) and k_dl == 6:
+        din[k_dg] += 1
+    if k_dg == 6 and k_dl == 6:
+        din[6] += 1
+    if not(k_dl==6) and not(k_dl==7) and not(k_dg==6) and not(k_dg==7):
+        din[k_dg]+=1
+        print('opa!')
 
 def chek(st_ref,st_alt,pos,pos_snp,probab_ref,probab_alt,positions_alt,er):
     fls = [-10]
@@ -74,7 +118,7 @@ stat = [0]*4
 lab_stat = ['ds_dg','ds_dl','ds_dgdl','all_ds']
 f_pos = 0
 din = [0] * 8 # статистика для динуклеотидов
-din_label = ['mpTA', 'pmTA', 'GmpA', 'GpmA', 'GGmp', 'GGpm', 'SNP in GT', 'other']  # заголовок
+din_label = ['mpTA', 'pmTA', 'GmpA', 'GpmA', 'GGmp', 'GGpm', 'SNP in\nGT', 'other']  # заголовок
 
 for st in pred:
     f_pos +=1
@@ -137,6 +181,7 @@ for st in pred:
     if (abs(probab_alt[2] - probab_ref[2]) >= 0.5) and (abs(probab_alt[3] - probab_ref[3]) >= 0.5):
         out_dgdl.write(st_ref+st_alt)
         stat[2]+=1
+        find_din_2(din, probab_ref, probab_alt, positions_ref, positions_alt, pos_mut, pos_snp, 'pred_filtr_ds_dgdl.vcf')
     if abs(probab_alt[2] - probab_ref[2]) >= 0.5 or abs(probab_alt[3] - probab_ref[3]) >= 0.5:# and not((probab_alt[2] - probab_ref[2] >= 0.5) and (probab_alt[3] - probab_ref[3] >= 0.5)):
         out_don.write(st_ref+st_alt)
         stat[3]+=1
@@ -192,3 +237,12 @@ out_dg.close()
 out_dl.close()
 out_dgdl.close()
 pred.close()
+
+# mpTA:1163
+# pmTA:1103
+# GmpA:848
+# GpmA:152
+# GGmp:352
+# GGpm:142
+# SNP in GT:1848
+# other:24921
