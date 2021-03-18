@@ -1,3 +1,4 @@
+#строит гистограммы зависимостей полим(длина), диф.пред(полим), диф.пред(длина)
 import numpy as np
 import matplotlib.pyplot as plt
 gens_stat = open('gens_statistic_polim.vcf','r')

@@ -1,3 +1,4 @@
+# Подсчет различной статистики по различающимся предсказаниям. ТАМ КУЧА ВЫХОДНЫХ ФАЙЛОВ!
 # https://habr.com/ru/post/468295/ 50 оттенков matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
