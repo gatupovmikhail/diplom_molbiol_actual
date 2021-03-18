@@ -45,7 +45,7 @@ out_dl.write(zag)
 out_dgdl.write(zag)
 out_don.write(zag)
 stat = [0]*4
-lab_stat = ['ds_dg','ds_dl','ds_dgdl','all']
+lab_stat = ['ds_dg','ds_dl','ds_dgdl','all_ds']
 f_pos = 0
 for st in pred:
     f_pos +=1
@@ -92,8 +92,8 @@ for st in pred:
         print('predict_ref\tpredict_alt\tpos_snp\tsnp')
         print('{}\t{}\t{}\t{}'.format(predict_ref,predict_alt,pos_snp,snp))
         print('###################################################################################################\n')
-
-
+    # проверка позиций прошла успешно
+    #ALLEL|GEN|DS_AG|DS_AL|DS_DG|DS_DL|DP_AG|DP_AL|DP_DG|DP_DL)
     if (abs(probab_alt[2] - probab_ref[2]) >= 0.5) and not(abs(probab_alt[3] - probab_ref[3]) >= 0.5):
         out_dg.write(st_ref+st_alt)
         stat[0]+=1
@@ -106,9 +106,10 @@ for st in pred:
     if abs(probab_alt[2] - probab_ref[2]) >= 0.5 or abs(probab_alt[3] - probab_ref[3]) >= 0.5:# and not((probab_alt[2] - probab_ref[2] >= 0.5) and (probab_alt[3] - probab_ref[3] >= 0.5)):
         out_don.write(st_ref+st_alt)
         stat[3]+=1
-
+print('Статистика')
 print(lab_stat)
 print(stat)
+print('Сумма==all_ds?: {}'.format(sum(stat[:-1])))
 
 
 
