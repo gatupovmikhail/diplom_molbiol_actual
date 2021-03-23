@@ -61,7 +61,7 @@ pax6_comp.py Для сравнения референсной версии PAX6 
     вход: pax6_from_razrab_filtr.vcf(разраб), pax6_ref_alg.vcf(наш,причем он подкоррект.) || выход: an_pax6_{:.2}.vcf
 delete_of_st.py Побочный проект: обработка предсказаний полиморфизмов. Удаляем все строки, в которых все вероятности равны нулю
     вход: Загрузки/ALL GnomAD variants/done_gnome_archives/for_splice_polim_{}.vcf || выход: all_gnom_variants_pred_filtr.vcf
-    вход: Predictions on whole alternative genome/archives/{}.vcf || выход: mutations_alt_genom_filtr.vcf, mutations_alt_genom_errors.vcf
+    вход: Predictions on whole alternative genome/archives/{}.vcf || выход: mutations_alt_genom_filtr.vcf, mutations_alt_genom_errors.vcf, mutations_alt_genom_log.txt
 score_of_gnomad.py Строится гистограмма распределения предсказаний по максимальным вероятностям.
     вход: all_gnom_variants_pred_filtr.vcf || выход: НЕТ
 score_larger.py Сразу две функции. Во-первых оставляет только полиморфизмы в генах Ad/AR. Потом еще оставляет только полимфорфизмы с максимальными скорами >0.1 и >0.2

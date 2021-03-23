@@ -62,13 +62,16 @@ for name_f in files:
     f = open(name_f,'r')
     ind_f += 1
     if (ind_f%100==0):
-        print(ind_f, end=' ')
+        print(int(ind_f/100), end=' ')
     for i in range(44):
         zag = f.readline()
     if ind_f == 1:
         file_out.write('#CHROM\tPOS\tREF\tALT\tINFO\n')
     for st in f:
         stm = st[0:-1].split('\t')
+        if not(len(stm) ==  10):
+            num_out += 3
+            continue
         const1 = '\t'.join(stm[0:2]) + '\t' + stm[3]
         #const2 = '\t'.join(stm[5:7])
         #const3 = '\t'.join(stm[8:10])
@@ -77,23 +80,28 @@ for name_f in files:
         try:
             re = allel_m[2]
         except IndexError:
+            num_out += 3
             continue
         try:
             info = stm[7]
         except IndexError:
+            num_out += 3
             continue
         try:
             spliceai_3 = info.split(';')[2] #3!
         except IndexError:
+            num_out += 3
             continue
         snp = info.split(';')[1]
         spliceai_mas = spliceai_3.replace('SpliceAI=','').split(',')
         try:
             spliceai_mas[2]
         except IndexError:
+            num_out += 3
             continue
         if not(len(spliceai_mas) == 3):
             file_error.write(st)
+            num_out += 3
             continue
 
         for n,spliceai in enumerate(spliceai_mas):
@@ -103,6 +111,7 @@ for name_f in files:
             try:
                 re = probab[5]
             except IndexError:
+                num_out += 1
                 continue
 
             for j in range(2, 6):
@@ -120,11 +129,16 @@ for name_f in files:
 file_out.close()
 file_error.close()
 t2 = time()
-print('Прошли')
-print(num_in)
-print('Oтброшено')
-print(num_out)
-print('Доля отброшенных')
-print(num_out/(num_in+num_out))
-print('Время выполнения (с)')
-print(t2-t1)
+file_log = open('mutations_alt_genom_log.txt','w')
+file_log.write('Прошли: ')
+file_log.write(num_in)
+file_log.write('\n')
+file_log.write('Oтброшено: ')
+file_log.write(num_out)
+file_log.write('\n')
+file_log.write('Доля отброшенных: ')
+file_log.write(num_out/(num_in+num_out))
+file_log.write('\n')
+file_log.write('Время выполнения (с): ')
+file_log.write(t2-t1)
+file_log.close()
