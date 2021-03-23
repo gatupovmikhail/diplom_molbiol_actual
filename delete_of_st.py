@@ -1,82 +1,130 @@
 # Побочный проект: обработка предсказаний полиморфизмов. Удаляем все строки, для которых все вероятности равны нулю
-path = '/home/gatupov/Загрузки/ALL GnomAD variants/done_gnome_archives/'
-f = open(path+'for_splice_polim_1.vcf','r')
-file_out = open('all_gnom_variants_pred_filtr.vcf','w')
+#path = '/home/gatupov/Загрузки/ALL GnomAD variants/done_gnome_archives/'
+import os
+from time import time
+def func_sort_chr(name):
+    try:
+        nchr = int(name.split('_')[0].replace('chr',''))
+        return nchr
+    except ValueError:
+        return 25
+def func_sort_pos(name):
+    nchr = int(name.split('_')[1])
+    return(nchr)
+path = '/home/gatupov/PycharmProjects/first_project/Predictions on whole alternative genome/archives'
+files = os.listdir(path)
+files.sort(key=lambda x: (func_sort_chr(x),func_sort_pos(x)) )
+for i in range(len(files)):
+    files[i] = path + '/' + files[i]
+
+#f = open(path+'for_splice_polim_1.vcf','r')
+#file_out = open('all_gnom_variants_pred_filtr.vcf','w')
+file_out = open('mutations_alt_genom_filtr.vcf','w')
+file_error = open('mutations_alt_genom_errors.vcf','w')
 num_in = 0
 num_out = 0
-for i in range(45):
-    zag = f.readline()
-    file_out.write(zag)
-for st in f:
-    stm = st[0:-1].split('\t')
-    fl = 0
-    try:
-        info = stm[7]
-    except IndexError:
-        continue
-    try:
-        spliceai = info.split(';')[3]
-    except IndexError:
-        continue
-    probab = spliceai.split('|')
-    try:
-        re = probab[5]
-    except IndexError:
-        continue
+# for i in range(44): # было 45
+#     zag = f.readline()
+#     file_out.write(zag)
+# for st in f:
+#     stm = st[0:-1].split('\t')
+#     fl = 0
+#     try:
+#         info = stm[7]
+#     except IndexError:
+#         continue
+#     try:
+#         spliceai = info.split(';')[2] ## 3!
+#     except IndexError:
+#         continue
+#     probab = spliceai.split('|')
+#     try:
+#         re = probab[5]
+#     except IndexError:
+#         continue
+#
+#     for j in range(2,6):
+#         if not(float(probab[j]) == 0):
+#             fl = 1
+#
+#     if fl == 1:
+#         file_out.write(st)
+#         num_in += 1
+#     else:
+#         num_out += 1
+# f.close()
 
-    for j in range(2,6):
-        if not(float(probab[j]) == 0):
-            fl = 1
-
-    if fl == 1:
-        file_out.write(st)
-        num_in += 1
-    else:
-        num_out += 1
-f.close()
-
-for i in range(2,861):
-    f = open(path+'for_splice_polim_{}.vcf'.format(i),'r')
-    print(i,end=' ')
-    if (i%50==0):
-        print()
-    for i in range(45):
+#for i in range(2,861):
+ind_f = 0
+t1 = time()
+for name_f in files:
+    #f = open(path+'for_splice_polim_{}.vcf'.format(i),'r')
+    f = open(name_f,'r')
+    ind_f += 1
+    if (ind_f%100==0):
+        print(ind_f, end=' ')
+    for i in range(44):
         zag = f.readline()
+    if ind_f == 1:
+        file_out.write('#CHROM\tPOS\tREF\tALT\tINFO\n')
     for st in f:
         stm = st[0:-1].split('\t')
-        fl = 0
+        const1 = '\t'.join(stm[0:2]) + '\t' + stm[3]
+        #const2 = '\t'.join(stm[5:7])
+        #const3 = '\t'.join(stm[8:10])
+        allel = stm[4]
+        allel_m = allel.split(',')
+        try:
+            re = allel_m[2]
+        except IndexError:
+            continue
         try:
             info = stm[7]
         except IndexError:
             continue
         try:
-            spliceai = info.split(';')[3]
+            spliceai_3 = info.split(';')[2] #3!
         except IndexError:
             continue
-
-        probab = spliceai.split('|')
-
+        snp = info.split(';')[1]
+        spliceai_mas = spliceai_3.replace('SpliceAI=','').split(',')
         try:
-            re = probab[5]
+            spliceai_mas[2]
         except IndexError:
             continue
+        if not(len(spliceai_mas) == 3):
+            file_error.write(st)
+            continue
 
-        for j in range(2, 6):
-            if not (float(probab[j]) == 0):
-                fl = 1
+        for n,spliceai in enumerate(spliceai_mas):
+            fl = 0
+            probab = spliceai.split('|')
 
-        if fl == 1:
-            file_out.write(st)
-            num_in += 1
-        else:
-            num_out += 1
+            try:
+                re = probab[5]
+            except IndexError:
+                continue
+
+            for j in range(2, 6):
+                if not (float(probab[j]) == 0):
+                    fl = 1
+
+            if fl == 1:
+                file_out.write(const1+'\t'+allel_m[n]+'\t'+snp+';SpliceAI='+spliceai+'\n')
+                num_in += 1
+            else:
+                num_out += 1
     f.close()
 
 
 file_out.close()
+file_error.close()
+t2 = time()
 print('Прошли')
 print(num_in)
 print('Oтброшено')
 print(num_out)
 print('Доля отброшенных')
 print(num_out/(num_in+num_out))
+print('Время выполнения (с)')
+print(t2-t1)
