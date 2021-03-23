@@ -80,3 +80,5 @@ minus_polim_pred.py отфильтровывает предсказания ря
 ochistka_predskaz - очищает от предсказаний, рядом с которыми есть полиморфизмы, между которыми расстояние менее 10 нуклеотидов
     gnomad_polim_snp.vcf, results_filtr.vcf || pred_filtr.vcf, pred_remove.vcf
 statistic_of_predictions.py # вытаскивает только предсказания с донорными сайтами в альтернативном сплайсинге и подсчитывает их статистику
+score_of_mutations - построение гистограммы для событий альтернативного сплайсинга.
+    вход: mutations_alt_genom_filtr.vcf || выход: freq_mut_alt_genom.txt
