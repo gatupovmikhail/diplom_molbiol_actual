@@ -51,9 +51,9 @@ for p,fp in zip(pr,fr):
     fif.write('{}\t{}\t{:.2}\n'.format(p,fp,round(fp/S,2)))
 
 fif.close()
-# plt.bar(pr,fr)
-# plt.grid(True)
-# plt.show()
+plt.bar(pr,fr)
+plt.grid(True)
+plt.show()
 
 
 
