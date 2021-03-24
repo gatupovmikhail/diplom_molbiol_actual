@@ -1,6 +1,7 @@
 # Побочный проект: обработка предсказаний полиморфизмов. Удаляем все строки, для которых все вероятности равны нулю
 #path = '/home/gatupov/Загрузки/ALL GnomAD variants/done_gnome_archives/'
-import os
+import os  # ctrl + alt+ 7
+import sys
 from time import time
 def func_sort_chr(name):
     try:
@@ -11,6 +12,9 @@ def func_sort_chr(name):
 def func_sort_pos(name):
     nchr = int(name.split('_')[1])
     return(nchr)
+#### от случайного срабатывания
+sys.exit()
+
 path = '/home/gatupov/PycharmProjects/first_project/Predictions on whole alternative genome/archives'
 files = os.listdir(path)
 files.sort(key=lambda x: (func_sort_chr(x),func_sort_pos(x)) )
@@ -57,17 +61,23 @@ num_out = 0
 #for i in range(2,861):
 ind_f = 0
 t1 = time()
+file_log = open('mutations_alt_genom_log.txt','w')
 for name_f in files:
     #f = open(path+'for_splice_polim_{}.vcf'.format(i),'r')
     f = open(name_f,'r')
     ind_f += 1
+    file_log.write(name_f + ' '+ str(ind_f) + '\n')
     if (ind_f%100==0):
         print(int(ind_f/100), end=' ')
     for i in range(44):
         zag = f.readline()
     if ind_f == 1:
         file_out.write('#CHROM\tPOS\tREF\tALT\tINFO\n')
+    num_st = 44
     for st in f:
+        num_st+=1
+        if num_st%10000 == 0:
+            file_log.write(str(num_st//10000)+' ')
         stm = st[0:-1].split('\t')
         if not(len(stm) ==  10):
             num_out += 3
@@ -122,23 +132,23 @@ for name_f in files:
                 file_out.write(const1+'\t'+allel_m[n]+'\t'+snp+';SpliceAI='+spliceai+'\n')
                 num_in += 1
             else:
-                num_out += 1
+               num_out += 1
+    file_log.write('\n')
     f.close()
 
 
 file_out.close()
 file_error.close()
 t2 = time()
-file_log = open('mutations_alt_genom_log.txt','w')
 file_log.write('Прошли: ')
-file_log.write(num_in)
+file_log.write(str(num_in))
 file_log.write('\n')
 file_log.write('Oтброшено: ')
-file_log.write(num_out)
+file_log.write(str(num_out))
 file_log.write('\n')
 file_log.write('Доля отброшенных: ')
-file_log.write(num_out/(num_in+num_out))
+file_log.write(str(num_out/(num_in+num_out)))
 file_log.write('\n')
 file_log.write('Время выполнения (с): ')
-file_log.write(t2-t1)
+file_log.write(str(t2-t1))
 file_log.close()
