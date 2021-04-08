@@ -10,11 +10,11 @@ long = open('pax6_alt_20.vcf','r')
 st_razl = 0
 num_short = 43
 num_long = 43
-probability = 0.5
+probability = 0.2
 p_max = [-1]*4
 p_min = [2]*4
 #file_out = open('alt_analis_from_splice_{:.2}.vcf'.format(probability),'w')
-file_out = open('alt20_analis_from_splice_{:.2}.vcf'.format(probability),'w')
+file_out = open('alt20_analis_from_splice_pax6_{:.2}.vcf'.format(probability),'w')
 file_out.write('#GENOM\tCHROM\tPOS\tREF\tALT\tPROBABILITY(Format: GEN|DS_AG|DS_AL|DS_DG|DS_DL|DP_AG|DP_AL|DP_DG|DP_DL)\n')
 
 # with open('splice_onegen_ref.vcf','r') as short:  # более короткий
