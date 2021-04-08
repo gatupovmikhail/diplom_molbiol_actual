@@ -2,8 +2,10 @@ from time import time
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.ticker as ticker
+import sys
 t1 = time()
 import os  # ctrl + alt+ 7
+
 def func_sort_chr(name):
     try:
         nchr = int(name.split('_')[0].replace('chr',''))
@@ -13,7 +15,6 @@ def func_sort_chr(name):
 def func_sort_pos(name):
     nchr = int(name.split('_')[1])
     return(nchr)
-
 path = '/home/gatupov/PycharmProjects/first_project/Predictions on whole alternative genome/archives'
 files = os.listdir(path)
 files.sort(key=lambda x: (func_sort_chr(x),func_sort_pos(x)) )
