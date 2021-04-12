@@ -1,3 +1,4 @@
+#128703965(4)
 from sys import exit
 #long = open('splice_onegen_alt.vcf','r') # более длинный
 #long = open('splice_ai_alt_com.vcf','r')

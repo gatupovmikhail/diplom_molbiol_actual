@@ -1,4 +1,6 @@
 import matplotlib.pyplot as plt
+import pandas as pd
+
 
 with open('gens_ad', 'r') as f:
     gens_ad = f.read().split('\n')[:-1]
@@ -55,18 +57,25 @@ print(len(list_ad))  # 1004 len
 print(len(list_ar))  # 1571 len
 print(len(list_ost))  # 8379 len
 
+print(len(gens_ar))  # 2502
+print(len(gens_ad))  # 1610
+mas = pd.DataFrame(index=['AD','AR'])
+mas['absolute'] = [1004, 1571]
+mas['percentage'] = [1004/1610, 1571/2502]
+mas['Number of gens in group'] = [1610, 2502]
+print(mas.head())
 
-x = []
-y = []
-counter_dict = {}
-for k in list_ad.keys():
-    x.append(k)
-    y.append(list_ad[k])
-    if list_ad[k] in counter_dict.keys():
-        counter_dict[list_ad[k]] += 1
-    else:
-        counter_dict[list_ad[k]] = 1
-print(counter_dict)
+# x = []
+# y = []
+# counter_dict = {}
+# for k in list_ad.keys():
+#     x.append(k)
+#     y.append(list_ad[k])
+#     if list_ad[k] in counter_dict.keys():
+#         counter_dict[list_ad[k]] += 1
+#     else:
+#         counter_dict[list_ad[k]] = 1
+#print(counter_dict)
 # plt.bar(x, y, width=0.8)
 # plt.xlabel('Gen')
 # plt.ylabel('Number of mutations')
