@@ -1,4 +1,9 @@
+# Формирование фрейма данных с аннотрованными предсказаниями на основе файла с мутациями и файла с предсказаниями.
+
 import pandas as pd
+import sys
+import tqdm
+
 
 
 def skip_header(fil):
@@ -10,6 +15,7 @@ def skip_header(fil):
 
 
 if __name__ == '__main__':
+
     mut = pd.read_csv('spec_mut_all_skor.csv')
 
     gen_dict = {}
@@ -23,80 +29,121 @@ if __name__ == '__main__':
     target_gens = list(gen_dict.keys())
     print(target_gens)
     print(spec_chroms)
-    print(mut.head())
+    # обработка DataFrame
     mut['Prediction_Ref'] = 'NaN'
     mut['Prediction_Ref_er'] = 'NaN'
+    mut['Prediction_Alt'] = 'NaN'
+    mut['Prediction_Alt_er'] = 'NaN'
     #print(mut.shape)  # (4360, 6)
-
-    #mut.sort_values(by=['GRCh37_CHR','GRCh37_POS'],inplace=True)
+    mut.replace({'GRCh37_CHR': {'X': 30}},inplace=True)
+    mut['GRCh37_POS'] = [int(x) for x in mut['GRCh37_POS']]
+    mut['GRCh37_CHR'] = [int(x) for x in mut['GRCh37_CHR']]
+    mut.sort_values(by=['GRCh37_CHR','GRCh37_POS'], inplace=True)
+    mut.reset_index(drop=True,inplace=True)
+    #mut['GRCh37_CHR'] = [str(x) for x in mut['GRCh37_CHR']]
+    #mut.replace({'GRCh37_CHR': {'30': 'X'}}, inplace=True)
+    #print(mut['GRCh37_CHR'].value_counts())
     #print(mut.head(30))
 
-    def finished_function(target_gens = target_gens, spec_chroms = spec_chroms, version = 'Ref'):
-        file_out = open('pred_for_spec_gens_ref.vcf', 'w')
-        files_dict = {}
-        for file_num in range(1,500):
-            name_file = '{}_prediction/for_splice_ref_{}.vcf'.format(version, file_num)
-            spl_mut = open(name_file,'r')
-            if file_num % 25 == 0:
-                print(file_num, end = ' ')
-            skip_header(spl_mut)
-            flag = 0
-            n_st = 0
-            for st in spl_mut:
-                n_st += 1
-                stm = st[:-1].split('\t')
-                chr = stm[0].replace('chr','')
-                if chr in spec_chroms:
-                    try:
-                        gen = stm[7].split(';')[2].split('|')[1]
-                    except IndexError:
-                        if flag == 1:
-                            file_out.write(st)
-                        continue
-                    if gen in target_gens:
-                        if name_file in files_dict.keys():
-                            files_dict[name_file].append(n_st)
-                        else:
-                            files_dict[name_file] = [n_st]
 
-                        file_out.write(st)
-                        flag = 1
-                        continue
-                flag = 0
-            spl_mut.close()
-        file_out.close()
-        for key in files_dict.keys():
-            print('{}: {}'.format(key,files_dict[key]))  # 4360
+    #finished_function()  # it is for creating pred_for_spec_gens_ref.vcf and pred_for_spec_gens_alt.vcf
 
 
-    #finished_function(version='Ref')
-    n_st_file = 0
-    anal_file = open('pred_for_spec_gens_ref.vcf','r')
-    for st in anal_file:
-        n_st_file += 1
-        if n_st_file == 1000:
-            print(n_st_file//1000,end=' ')
-        stm = st[:-1].split('\t')
-        chr = stm[0].replace('chr','')
-        pos = stm[1]
-        ref = stm[3]
-        alt_mas = stm[4].split(',')
-        try:
-            pred = stm[7].split(';')[2].replace('SpliceAI=','').split(',')
-        except IndexError:
-            continue
-        alt_gen = pred[0].split('|')[1]
-        for nrow in range(mut.shape[0]):
-            if mut.loc[nrow]['GRCh37_CHR'] == chr:
-                if mut.loc[nrow]['Gene_Symbol'] == alt_gen:
-                    if mut.loc[nrow]['GRCh37_POS'] == pos:
-                        for n_alt, alt in enumerate(alt_mas):
-                            if mut.loc[nrow]['GRCh37_ALT'] == alt:
-                                if mut.loc[nrow]['GRCh37_REF'] == ref:
-                                    mut['Prediction_Ref'] = pred[n_alt]
-                                else:
-                                    mut['Prediction_Ref_er'] = pred[n_alt]
+    for nrow in range(mut.shape[0]):
+        row_frame = mut.loc[nrow]
+        chr_frame = row_frame['GRCh37_CHR']
+        gen_frame = row_frame['Gene_Symbol']
+        pos_frame = row_frame['GRCh37_POS']
+        alt_frame = row_frame['GRCh37_ALT']
+        ref_frame = row_frame['GRCh37_REF']
+        n_st_file = 0
+        if nrow % 200 == 0:
+            print(nrow // 100, end=' ')
+            #if nrow // 100 == 10:
+                #break
+        anal_file = open('pred_for_spec_gens_Ref.vcf', 'r')
 
-    mut.to_csv('annotated_mutations.vcf')
-    anal_file.close()
+        for st in anal_file:
+            n_st_file += 1
+
+            stm = st[:-1].split('\t')
+            chr = stm[0].replace('chr','')
+            if chr == 'X':
+                chr = 30
+            else:
+                chr = int(chr)
+            pos = int(stm[1])
+            ref = stm[3]
+            alt_mas = stm[4].split(',')
+            try:
+                pred = stm[7].split(';')[2].replace('SpliceAI=','').split(',')
+            except IndexError:
+                print(st)
+            alt_gen = pred[0].split('|')[1]
+            if chr_frame == chr:
+                if pos_frame == pos:
+                    for n_alt, alt in enumerate(alt_mas):
+                        if alt_frame == alt:
+                            if ref_frame == ref:
+                                mut['Prediction_Ref'][nrow] = str(pred[n_alt])
+                                #print('yep')
+                            else:
+                                mut['Prediction_Ref_er'][nrow] = str(pred[n_alt])
+            if chr > chr_frame:
+                break
+            if chr == chr_frame and pos > pos_frame:
+                break
+        anal_file.close()
+
+    for nrow in range(mut.shape[0]):
+        row_frame = mut.loc[nrow]
+        chr_frame = row_frame['GRCh37_CHR']
+        gen_frame = row_frame['Gene_Symbol']
+        pos_frame = row_frame['GRCh37_POS']
+        alt_frame = row_frame['GRCh37_ALT']
+        ref_frame = row_frame['GRCh37_REF']
+        n_st_file = 0
+        if nrow % 200 == 0:
+            print(nrow // 100, end=' ')
+            #if nrow // 100 == 10:
+                #break
+        anal_file = open('pred_for_spec_gens_Alt.vcf', 'r')
+
+        for st in anal_file:
+            n_st_file += 1
+
+            stm = st[:-1].split('\t')
+            chr = stm[0].replace('chr','')
+            if chr == 'X':
+                chr = 30
+            else:
+                chr = int(chr)
+            pos = int(stm[1])
+            ref = stm[3]
+            alt_mas = stm[4].split(',')
+            try:
+                pred = stm[7].split(';')[2].replace('SpliceAI=','').split(',')
+            except IndexError:
+                print(st)
+            alt_gen = pred[0].split('|')[1]
+            if chr_frame == chr:
+                if pos_frame == pos:
+                    for n_alt, alt in enumerate(alt_mas):
+                        if alt_frame == alt:
+                            if ref_frame == ref:
+                                mut['Prediction_Alt'][nrow] = str(pred[n_alt])
+                                #print('yep')
+                            else:
+                                mut['Prediction_Alt_er'][nrow] = str(pred[n_alt])
+            if chr > chr_frame:
+                break
+            if chr == chr_frame and pos > pos_frame:
+                break
+        anal_file.close()
+
+    print()
+    mut.head(20)
+    mut.to_csv('Annotated_mutations.vcf')
+
+
 # n of ref_files: 70 , 224, 237, 238, 324
