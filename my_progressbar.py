@@ -20,7 +20,7 @@ class Progressbar():
 
     print('Вот это прогресс бар')
 
-bar = Progressbar(5,135)
-for i in range(135):
-    bar.next()
-    time.sleep(0.1)
+#bar = Progressbar(5,135)
+#for i in range(135):
+    #bar.next()
+    #time.sleep(0.1)

@@ -88,3 +88,5 @@ izvlech_scores_for_mut - аннотирует нужные мутации пре
 izvlech_pred_belongs_gens.py - Здесь лежат дублированные функции для izvlech_scores_for_mut. Программа не тестирована.
 analis_of_dataframe - анализа фрейма от izvlech_scores_for_mut
 my_pregressbar.py - сделанный мною прогрессбар.
+for_splice_ai_SCN1A_reverse.py  Мутагенез гена на - цепи
+for_splice_ai_SCN1A.py # Мутагенез одного гена SCN1A
