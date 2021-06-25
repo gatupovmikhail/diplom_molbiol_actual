@@ -91,4 +91,4 @@ my_pregressbar.py - сделанный мною прогрессбар.
 for_splice_ai_SCN1A_reverse.py  Мутагенез гена на - цепи
 for_splice_ai_SCN1A.py # Мутагенез одного гена SCN1A
 for_pli_scores.py построение мутаций по генам с различными pli скорами
-browser_files tkinter окно для выбора файлов. Скопировано из интернета. Работает.
+browser_files.py tkinter окно для выбора файлов. Скопировано из интернета. Работает.
