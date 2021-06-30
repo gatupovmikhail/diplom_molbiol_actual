@@ -54,7 +54,7 @@ def main(number):
     name_file = path + 'gnomad.genomes.r2.0.2.sites.chr{}.vcf'.format(N)
     # name_file = 'gnomad.exomes.r2.1.1.sites.Y.vcf'
     gnom = open(name_file, 'r')
-    file_out = open(path + 'gnomad_filtr_1exons/gnomad_polim_1exon_chr{}.vcf'.format(N), 'w')
+    file_out = open(path + 'gnomad_filtr_1exons/gnomad_polim_1exon_chr1.vcf', 'a')
     file_log = open(path + 'gnomad_log.txt', 'a')
     num = 0
     st = '#'
@@ -87,10 +87,10 @@ def main(number):
         if (genm[1] - 5) <= pos <= (genm[1] + 50):
             if genm[3] == 1:
                 #file_out.write('{}\t{}\t{}\t{}\t{}\t{}\t{}\n'.format('chr' + ch, pos, ref, alt, af, id, genm[0]))
-                file_out.write(st)
+                file_out.write(genm[0]+'\t'+st)
             else:
                 if pos <= genm[2]:
-                    file_out.write(st)
+                    file_out.write(genm[0]+'\t'+st)
                     #file_out.write('{}\t{}\t{}\t{}\t{}\t{}\t{}\n'.format('chr' + ch, pos, ref, alt, af, id, genm[0]))
         if pos >= genm[1] + 50:
             break
@@ -113,11 +113,11 @@ def main(number):
             if (genm[1] - 5) <= pos <= (genm[1] + 50):
                 if genm[3] == 1:
                     #file_out.write('{}\t{}\t{}\t{}\t{}\t{}\t{}\n'.format('chr' + ch, pos, ref, alt, af, id, genm[0]))
-                    file_out.write(st)
+                    file_out.write(genm[0]+'\t'+st)
                 else:
                     if pos <= genm[2]:
                         #file_out.write('{}\t{}\t{}\t{}\t{}\t{}\t{}\n'.format('chr' + ch, pos, ref, alt, af, id, genm[0]))
-                        file_out.write(st)
+                        file_out.write(genm[0]+'\t'+st)
             if pos >= genm[1] + 50:
                 break
 
