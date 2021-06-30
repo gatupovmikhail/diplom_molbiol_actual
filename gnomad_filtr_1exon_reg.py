@@ -51,7 +51,7 @@ def main(number):
     #N = 1 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     # N = 'Y'
     path = '/media/gatupov/Elements1/Миши_Диплом/'
-    name_file = path + 'gnomad.genomes.r2.0.2.sites.chr{}.vcf'.format(N)
+    name_file = 'gnomad.genomes.r2.0.2.sites.chr{}.vcf'.format(N)
     # name_file = 'gnomad.exomes.r2.1.1.sites.Y.vcf'
     gnom = open(name_file, 'r')
     file_out = open(path + 'gnomad_filtr_1exons/gnomad_polim_1exon_chr1.vcf', 'a')
@@ -67,8 +67,8 @@ def main(number):
         zag = st
         st = gnom.readline()
         num += 1
-    if ind == 0:
-        file_out.write('#CHROM\tPOS\tREF\tALT\tAF\tID\tGEN\n')
+    # if ind == 0:
+    #     file_out.write('#CHROM\tPOS\tREF\tALT\tAF\tID\tGEN\n')
 
     stm = st.split('\t')
     if len(stm) < 7:
