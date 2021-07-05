@@ -11,17 +11,27 @@ def main(number):
     exons['X'] = []
     exons['Y'] = []
     razmer_count = 0 # сколько генов с первым экзоном меньше 50
-    with open('gens_spliceAI_sorted_concantenated.txt','r') as genf:
+    with open('gens_spliceAI.txt','r') as genf:
         zag = genf.readline()
         print(zag)
         for st in genf:
             stm = st[:-1].split('\t')
             gen = stm[0]
             chr = stm[1]
-            ex_start = int(stm[5].split(',')[0])
-            ex_end = int(stm[6].split(',')[0])
-            exons[chr].append([gen, ex_start, ex_end])
-    #print(exons.keys())
+            strand = stm[2]
+            ex_start_lastex = int(stm[5].split(',')[len(stm[5].split(',')) - 2])
+            ex_end_firstex = int(stm[6].split(',')[0])
+            if ex_start_lastex == '':
+                print('ERROR! EMPTY BEGIN!')
+            if strand == '+':
+                exons[chr].append([gen, strand, ex_end_firstex])
+            if strand == '-':
+                exons[chr].append([gen, strand, ex_start_lastex])
+            if not(strand == '+' or strand == '-'):
+                print('FAIL. CHAIN IS NOT DEFINDED')
+    # print(exons.keys())
+    # for hi in exons.items():
+    #     print(hi)
     #print(f'Генов с размером 1 экзона меньше 50: {razmer_count}')
     # Проверка, отсортированы ли гены
     # for mas in exons.values():
@@ -37,7 +47,7 @@ def main(number):
     else:
         name_file ='gnomad.exomes.r2.1.1.sites.Y.vcf'
     gnom = open(name_file, 'r')
-    file_out = open('gnomad_polim_1exon.vcf', 'a')
+    file_out = open('gnomad_polim_1exon_gencode_v24.vcf', 'a')
     file_log = open(path + 'gnomad_log.txt', 'a')
     num = 0
     st = '#'
@@ -50,12 +60,12 @@ def main(number):
     #     file_out.write('#CHROM\tPOS\tREF\tALT\tAF\tID\tGEN\n')
 
     stm = st.split('\t')
-    if len(stm) < 7:
-        print('fail')
-        gnom.close()
-        file_out.close()
-        file_log.close()
-        exit()
+    # if len(stm) < 7:
+    #     print('fail')
+    #     gnom.close()
+    #     file_out.close()
+    #     file_log.close()
+    #     exit()
     ch = stm[0]
     pos = int(stm[1])
     for genm in exons[ch]:
